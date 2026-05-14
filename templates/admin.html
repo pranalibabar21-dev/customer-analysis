@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Admin Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <h2 class="logo">
+
+            Sales Dashboard
+
+        </h2>
+
+        <a href="/dashboard">
+
+            Dashboard
+
+        </a>
+
+        <a href="/profile">
+
+            Profile
+
+        </a>
+
+        <a href="/prediction">
+
+            Prediction
+
+        </a>
+
+        <a href="/admin">
+
+            Admin
+
+        </a>
+
+        <a href="/logout">
+
+            Logout
+
+        </a>
+
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+        <!-- HEADER -->
+        <div class="dashboard-header">
+
+            <div>
+
+                <h1>
+
+                    Admin Dashboard
+
+                </h1>
+
+                <h5>
+
+                    Welcome Admin
+
+                </h5>
+
+            </div>
+
+        </div>
+
+        <!-- ADMIN CARDS -->
+        <div class="row mt-4">
+
+            <div class="col-md-4">
+
+                <div class="card dashboard-card bg-primary text-white">
+
+                    <div class="card-body">
+
+                        <h4>
+
+                            Total Users
+
+                        </h4>
+
+                        <h2>
+
+                            {{ users|length }}
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card dashboard-card bg-success text-white">
+
+                    <div class="card-body">
+
+                        <h4>
+
+                            Active System
+
+                        </h4>
+
+                        <h2>
+
+                            Online
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card dashboard-card bg-danger text-white">
+
+                    <div class="card-body">
+
+                        <h4>
+
+                            Database Status
+
+                        </h4>
+
+                        <h2>
+
+                            Connected
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- USERS TABLE -->
+        <div class="card mt-5">
+
+            <div class="card-body">
+
+                <h3 class="text-dark">
+
+                    Registered Users
+
+                </h3>
+
+                <table class="table table-bordered mt-4">
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Username</th>
+
+                        <th>Password</th>
+
+                        <th>Role</th>
+
+                    </tr>
+
+                    {% for user in users %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ user[0] }}
+
+                        </td>
+
+                        <td>
+
+                            {{ user[1] }}
+
+                        </td>
+
+                        <td>
+
+                            {{ user[2] }}
+
+                        </td>
+
+                        <td>
+
+                            {{ user[3] }}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- ADMIN INSIGHTS -->
+        <div class="card mt-4">
+
+            <div class="card-body">
+
+                <h4 class="text-dark">
+
+                    System Insights
+
+                </h4>
+
+                <ul class="text-dark">
+
+                    <li>
+                        System successfully connected with SQLite database.
+                    </li>
+
+                    <li>
+                        User authentication working properly.
+                    </li>
+
+                    <li>
+                        Machine Learning prediction module active.
+                    </li>
+
+                    <li>
+                        Dashboard analytics running successfully.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+
+    MCA Final Year Major Project |
+    Developed by Pranali Babar
+
+</footer>
+
+</body>
+
+</html>

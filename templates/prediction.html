@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Sales Prediction</title>
+
+    <!-- Bootstrap -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <h2 class="logo">
+
+            Sales Dashboard
+
+        </h2>
+
+        <a href="/dashboard">
+
+            Dashboard
+
+        </a>
+
+        <a href="/profile">
+
+            Profile
+
+        </a>
+
+        <a href="/prediction">
+
+            Prediction
+
+        </a>
+
+        <a href="/admin">
+
+            Admin
+
+        </a>
+
+        <a href="/logout">
+
+            Logout
+
+        </a>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- HEADER -->
+        <div class="dashboard-header">
+
+            <div>
+
+                <h1>
+
+                    Sales Prediction
+
+                </h1>
+
+                <h5>
+
+                    Welcome {{ session['user'] }}
+
+                </h5>
+
+            </div>
+
+        </div>
+
+        <!-- PREDICTION FORM -->
+        <div class="row mt-4">
+
+            <div class="col-md-4">
+
+                <div class="card p-4">
+
+                    <div class="card-body">
+
+                        <h4 class="text-dark">
+
+                            Predict Future Sales
+
+                        </h4>
+
+                        <form method="POST">
+
+                            <label class="text-dark mt-3">
+
+                                Quantity
+
+                            </label>
+
+                            <input
+                                type="number"
+                                name="quantity"
+                                class="form-control"
+                                required>
+
+                            <label class="text-dark mt-3">
+
+                                Price
+
+                            </label>
+
+                            <input
+                                type="number"
+                                name="price"
+                                class="form-control"
+                                required>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-login">
+
+                                Predict Sales
+
+                            </button>
+
+                        </form>
+
+                        {% if prediction %}
+
+                        <div class="alert alert-success mt-4">
+
+                            <h4>
+
+                                Predicted Sales:
+                                ₹ {{ prediction }}
+
+                            </h4>
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- GRAPH -->
+            <div class="col-md-8">
+
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <h4 class="text-dark">
+
+                            Actual vs Predicted Sales
+
+                        </h4>
+
+                        <img
+                        src="{{ url_for('static', filename=prediction_chart) }}">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ANALYTICS -->
+        <div class="row mt-4">
+
+            <div class="col-md-6">
+
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <h4 class="text-dark">
+
+                            Prediction Insights
+
+                        </h4>
+
+                        <ul class="text-dark">
+
+                            <li>
+                                Machine Learning model:
+                                Linear Regression
+                            </li>
+
+                            <li>
+                                Prediction based on historical sales data
+                            </li>
+
+                            <li>
+                                Model improves business forecasting
+                            </li>
+
+                            <li>
+                                Helps identify sales trends
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PERFORMANCE -->
+            <div class="col-md-6">
+
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <h4 class="text-dark">
+
+                            Model Performance
+
+                        </h4>
+
+                        <div class="progress mt-4">
+
+                            <div
+                                class="progress-bar bg-success"
+                                role="progressbar"
+                                style="width: 85%">
+
+                                85%
+
+                            </div>
+
+                        </div>
+
+                        <p class="text-dark mt-3">
+
+                            Model accuracy indicates
+                            reliable prediction capability.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+
+    MCA Final Year Major Project |
+    Developed by Pranali Babar
+
+</footer>
+
+</body>
+
+</html>
