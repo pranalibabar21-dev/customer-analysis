@@ -188,7 +188,17 @@ if not admin:
     )
 
     conn.commit()
+# =========================================
+# dataset_exist
+# =========================================
 
+def dataset_exists():
+
+    return (
+        os.path.exists("uploads/sales_data.csv")
+        and
+        os.path.exists("uploads/customer_data.csv")
+    )
 # =========================================
 # HELPER FUNCTION
 # LOAD DATASET AFTER UPLOAD
@@ -196,40 +206,36 @@ if not admin:
 
 def load_data():
 
-    sales_file = os.path.join(
-        "uploads",
-        "sales_data.csv"
-    )
+    try:
 
-    customer_file = os.path.join(
-        "uploads",
-        "customer_data.csv"
-    )
+        sales_data = pd.read_csv(
+            "uploads/sales_data.csv",
+            encoding="utf-8"
+        )
 
-    if not os.path.exists(sales_file):
+    except:
 
-        return None, None
+        sales_data = pd.read_csv(
+            "uploads/sales_data.csv",
+            encoding="latin1"
+        )
 
-    if not os.path.exists(customer_file):
+    try:
 
-        return None, None
+        customer_data = pd.read_csv(
+            "uploads/customer_data.csv",
+            encoding="utf-8"
+        )
 
-    sales_data = pd.read_csv(
-        sales_file
-    )
+    except:
 
-    customer_data = pd.read_csv(
-        customer_file
-    )
-
-    # Convert date column
-    if "Date" in sales_data.columns:
-
-        sales_data["Date"] = pd.to_datetime(
-            sales_data["Date"]
+        customer_data = pd.read_csv(
+            "uploads/customer_data.csv",
+            encoding="latin1"
         )
 
     return sales_data, customer_data
+
 
 
 # =========================================
@@ -275,12 +281,44 @@ def add_log(username, activity):
 def home():
 
     return render_template(
+        "home.html"
+    )
+
+def login_required():
+
+    return "user" in session
+# =========================================
+# CONTACT
+# =========================================
+
+@app.route("/contact")
+def contact():
+
+    return render_template(
+        "contact.html"
+    )
+# =========================================
+# ABOUT 
+# =========================================
+@app.route("/about")
+def about():
+
+    return render_template(
+        "about.html"
+    )
+
+# =========================================
+# LOGIN PAGE
+# =========================================
+@app.route("/login_page")
+def login_page():
+
+    return render_template(
         "login.html"
     )
 # =========================================
-# LOGIN
+# LOGIN 
 # =========================================
-
 @app.route("/login", methods=["POST"])
 def login():
 
@@ -318,7 +356,7 @@ def login():
             password
         ):
 
-            session["user"] = user[1]
+            session["user"] = username
 
             session["role"] = user[3]
 
@@ -327,26 +365,103 @@ def login():
                 "Logged In"
             )
 
+            # ADMIN LOGIN
+
             if user[3] == "admin":
 
                 return redirect(
                     "/admin"
                 )
 
+            # USER LOGIN
+
+            if dataset_exists():
+
+                return redirect(
+                    "/dashboard"
+                )
+
             return redirect(
-                "/dashboard"
+                "/upload"
             )
 
     return """
 
-    <h2>Invalid Username or Password</h2>
+    <h2>
 
-    <a href='/'>
-        Back to Login
+    Invalid Username or Password
+
+    </h2>
+
+    <br>
+
+    <a href='/login_page'>
+
+    Back To Login
+
     </a>
 
     """
+# =========================================
+# FORGOT PASSWORD
+# =========================================
 
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+
+        new_password = request.form["new_password"]
+
+        conn = sqlite3.connect("users.db")
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT * FROM users
+            WHERE username=?
+            """,
+            (username,)
+        )
+
+        user = cursor.fetchone()
+
+        if user:
+
+            cursor.execute(
+                """
+                UPDATE users
+                SET password=?
+                WHERE username=?
+                """,
+                (
+                    generate_password_hash(
+                        new_password
+                    ),
+                    username
+                )
+            )
+
+            conn.commit()
+
+            conn.close()
+
+            return """
+            Password Updated Successfully
+            <br><br>
+            <a href='/login_page'>Login</a>
+            """
+
+        conn.close()
+
+        return "Username Not Found"
+
+    return render_template(
+        "forgot_password.html"
+    )
 
 # =========================================
 # REGISTER
@@ -408,7 +523,7 @@ def register():
 
             conn.close()
 
-            return redirect("/")
+            return redirect("/login_page")
 
         except:
 
@@ -571,23 +686,88 @@ def login_required():
 # UPLOAD DATASET
 # =========================================
 
-@app.route("/upload", methods=["GET", "POST"])
+@app.route(
+    "/upload",
+    methods=["GET", "POST"]
+)
 def upload():
 
     if "user" not in session:
 
-        return redirect("/")
+        return redirect(
+            "/login_page"
+        )
+
+    sales_exists = os.path.exists(
+        "uploads/sales_data.csv"
+    )
+
+    customer_exists = os.path.exists(
+        "uploads/customer_data.csv"
+    )
 
     if request.method == "POST":
 
-        sales_file = request.files["sales_file"]
+        sales_file = request.files[
+            "sales_file"
+        ]
 
-        customer_file = request.files["customer_file"]
+        customer_file = request.files[
+            "customer_file"
+        ]
+
+        # ==========================
+        # CSV VALIDATION
+        # ==========================
+
+        if not sales_file.filename.lower().endswith(
+            ".csv"
+        ):
+
+            return """
+
+            <script>
+
+            alert(
+            'Please upload Sales Dataset in CSV format only'
+            );
+
+            window.location.href='/upload';
+
+            </script>
+
+            """
+
+        if not customer_file.filename.lower().endswith(
+            ".csv"
+        ):
+
+            return """
+
+            <script>
+
+            alert(
+            'Please upload Customer Dataset in CSV format only'
+            );
+
+            window.location.href='/upload';
+
+            </script>
+
+            """
+
+        # ==========================
+        # CREATE UPLOAD FOLDER
+        # ==========================
 
         os.makedirs(
             "uploads",
             exist_ok=True
         )
+
+        # ==========================
+        # SAVE FILES
+        # ==========================
 
         sales_file.save(
             "uploads/sales_data.csv"
@@ -597,21 +777,64 @@ def upload():
             "uploads/customer_data.csv"
         )
 
-        generate_charts()
+        # ==========================
+        # GENERATE CHARTS
+        # ==========================
 
-        add_log(
-            session["user"],
-            "Uploaded Dataset"
-        )
+        try:
 
-        return redirect(
-            "/dashboard"
-        )
+            generate_charts()
+
+        except Exception as e:
+
+            print(
+                "Chart Error:",
+                e
+            )
+
+        # ==========================
+        # ACTIVITY LOG
+        # ==========================
+
+        try:
+
+            add_log(
+
+                session["user"],
+
+                "Uploaded Dataset"
+            )
+
+        except:
+
+            pass
+
+        # ==========================
+        # SUCCESS MESSAGE
+        # ==========================
+
+        return """
+
+        <script>
+
+        alert(
+        'Dataset Uploaded Successfully'
+        );
+
+        window.location.href='/dashboard';
+
+        </script>
+
+        """
 
     return render_template(
-        "upload.html"
-    )
 
+        "upload.html",
+
+        sales_exists=sales_exists,
+
+        customer_exists=customer_exists
+    )
 # =========================================
 # CHECK DATASET
 # =========================================
@@ -646,11 +869,12 @@ def dataset_exists():
 # =========================================
 # DASHBOARD
 # =========================================
+
 @app.route("/dashboard")
 def dashboard():
 
     if not login_required():
-        return redirect("/")
+        return redirect("/login_page")
 
     if not dataset_exists():
         return redirect("/upload")
@@ -660,16 +884,42 @@ def dashboard():
     if sales_data is None:
         return redirect("/upload")
 
+    # ==========================
+    # DATASET INFORMATION
+    # ==========================
+
+    sales_records = len(
+        sales_data
+    )
+
+    customer_records = len(
+        customer_data
+    )
+
+    total_products = sales_data[
+        "Product"
+    ].nunique()
+
+    total_regions = sales_data[
+        "Region"
+    ].nunique()
+
     try:
         generate_charts()
+
     except Exception as e:
-        print("Chart Generation Error:", e)
+
+        print(
+            "Chart Generation Error:",
+            e
+        )
 
     # KPI
 
     total_sales = 0
 
     if "Total_Sales" in sales_data.columns:
+
         total_sales = round(
             sales_data["Total_Sales"].sum(),
             2
@@ -678,6 +928,7 @@ def dashboard():
     total_customers = 0
 
     if "Customer_ID" in sales_data.columns:
+
         total_customers = sales_data[
             "Customer_ID"
         ].nunique()
@@ -689,6 +940,7 @@ def dashboard():
         and
         "Total_Sales" in sales_data.columns
     ):
+
         top_product = sales_data.groupby(
             "Product"
         )["Total_Sales"].sum().idxmax()
@@ -696,11 +948,14 @@ def dashboard():
     # ML Accuracy
 
     try:
+
         model, accuracy = train_model()
+
     except:
+
         accuracy = 0
 
-    # Search Filter
+    # SEARCH
 
     search = request.args.get(
         "search",
@@ -733,10 +988,11 @@ def dashboard():
     ):
 
         filtered_data = filtered_data[
-            filtered_data["Region"] == region
+            filtered_data["Region"]
+            == region
         ]
 
-    # Table
+    # TABLE
 
     sales_table = filtered_data.head(
         20
@@ -746,7 +1002,7 @@ def dashboard():
         index=False
     )
 
-    # Regions
+    # REGIONS
 
     regions = []
 
@@ -758,21 +1014,21 @@ def dashboard():
             .unique()
         )
 
-    # Insights
+    # INSIGHTS
 
     insights = [
 
-        f"Highest sales product: {top_product}",
+        f"Highest Sales Product : {top_product}",
 
-        f"Total customers analyzed: {total_customers}",
+        f"Total Customers : {total_customers}",
 
-        f"Total sales generated: ₹{total_sales}",
+        f"Total Sales : ₹{total_sales}",
 
-        f"Model Accuracy: {accuracy}%"
+        f"Model Accuracy : {accuracy}%"
 
     ]
 
-    # Activity Log
+    # LOG
 
     try:
 
@@ -782,6 +1038,7 @@ def dashboard():
         )
 
     except:
+
         pass
 
     return render_template(
@@ -802,6 +1059,14 @@ def dashboard():
 
         regions=regions,
 
+        sales_records=sales_records,
+
+        customer_records=customer_records,
+
+        total_products=total_products,
+
+        total_regions=total_regions,
+
         chart="chart.png",
 
         monthly_chart="monthly_chart.png",
@@ -812,7 +1077,6 @@ def dashboard():
     )
 def generate_charts():
 
-    import os
     import pandas as pd
     import matplotlib.pyplot as plt
 
@@ -2074,44 +2338,6 @@ def insights():
 
     return html
 
-
-# =========================================
-# ABOUT PROJECT
-# =========================================
-
-@app.route("/about")
-def about():
-
-    return """
-
-    <h2>
-
-    Customer Sales and Churn Analysis System
-
-    </h2>
-
-    <hr>
-
-    <h3>
-
-    MCA Final Year Major Project
-
-    </h3>
-
-    <h4>
-
-    Technologies:
-
-    Python, Flask, SQLite,
-    Machine Learning,
-    Pandas, Matplotlib,
-    Scikit-Learn
-
-    </h4>
-
-    """
-
-
 # =========================================
 # ERROR HANDLER
 # =========================================
@@ -2157,7 +2383,6 @@ def not_found(error):
 # =========================================
 # RUN APPLICATION
 # =========================================
-
 if __name__ == "__main__":
 
     port = int(

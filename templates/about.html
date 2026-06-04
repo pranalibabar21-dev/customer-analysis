@@ -1,78 +1,142 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
+<meta charset="UTF-8">
 
-    <title>Admin Panel</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet">
+<title>
+    About Us
+</title>
 
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet">
 
 </head>
 
 <body>
 
-    <nav class="navbar navbar-dark bg-dark">
+<div class="container mt-5">
 
-        <div class="container-fluid">
+<div class="d-flex justify-content-end">
 
-            <a class="navbar-brand">
-                Admin Dashboard
-            </a>
+    <a href="/"
+       class="text-decoration-none">
 
-            <div>
+        Home
 
-                <a href="/dashboard"
-                    class="btn btn-primary">
-                    Dashboard
-                </a>
+    </a>
 
-                <a href="/logout"
-                    class="btn btn-danger">
-                    Logout
-                </a>
+</div>
 
-            </div>
+<h1 class="text-center">
 
-        </div>
+    About Us
 
-    </nav>
+</h1>
 
-    <div class="container-fluid">
+<hr>
 
-        <h1 class="mt-4">
-            Admin Panel
-        </h1>
+<p class="lead text-center">
 
-        <div class="mt-5">
+    Customer Sales & Churn Analysis System
+    is a web-based application developed to
+    analyze customer sales data, predict future
+    sales trends, identify customer churn patterns,
+    and perform customer segmentation using
+    Machine Learning techniques.
 
-            <h3>
-                Sales Dataset
-            </h3>
+</p>
 
-            <div class="table-responsive">
+<br>
 
-                {{ data|safe }}
+<h3>
 
-            </div>
+    Project Objectives
 
-        </div>
+</h3>
 
-    </div>
+<ul>
 
-    <footer class="text-center mt-5 mb-3">
+    <li>
+        Analyze customer sales performance
+    </li>
 
-        <p>
+    <li>
+        Predict future sales using Machine Learning
+    </li>
 
-            Developed by Pranali Babar
+    <li>
+        Identify customer churn trends
+    </li>
 
-        </p>
+    <li>
+        Perform customer segmentation
+    </li>
 
-    </footer>
+    <li>
+        Generate business insights and reports
+    </li>
+
+</ul>
+
+<br>
+
+<h3>
+
+    Technologies Used
+
+</h3>
+
+<p>
+
+    Python, Flask, SQLite, Pandas,
+    Matplotlib, Scikit-Learn and Bootstrap.
+
+</p>
+
+<br>
+
+<h3>
+
+    Key Features
+
+</h3>
+
+<ul>
+
+    <li>User Registration & Login</li>
+
+    <li>Admin Dashboard</li>
+
+    <li>CSV Dataset Upload</li>
+
+    <li>Sales Prediction</li>
+
+    <li>Customer Segmentation</li>
+
+    <li>Customer Churn Analysis</li>
+
+    <li>PDF Report Generation</li>
+
+    <li>Excel Export</li>
+
+</ul>
+
+</div>
+
+<footer class="mt-5 ps-3 pb-3">
+<small>
+
+    Developed By:
+    Pranali Babar
+
+</small>
+
+</footer>
 
 </body>
 

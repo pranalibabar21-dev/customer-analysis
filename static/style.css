@@ -2,15 +2,13 @@
 GLOBAL
 ========================================= */
 
-body {
+body{
 
     margin: 0;
 
     padding: 0;
 
-    font-family: Arial, sans-serif;
-
-    background: #f4f6f9;
+    background:#f4f6f9;
 }
 
 /* =========================================
@@ -67,11 +65,12 @@ MAIN CONTENT
 
 .main-content {
 
-    margin-left: 260px;
+    margin-left: 250px;
+
+    width: calc(100% - 250px);
 
     padding: 20px;
 }
-
 .dashboard-header {
 
     background: white;
@@ -162,17 +161,15 @@ BUTTONS
 FOOTER
 ========================================= */
 
-footer {
+footer{
 
-    text-align: center;
+    text-align: left;
 
-    padding: 20px;
+    padding-left: 20px;
 
-    margin-top: 30px;
+    padding-bottom: 15px;
 
-    background: white;
-
-    border-top: 1px solid #ddd;
+    color: #666;
 }
 
 /* =========================================
@@ -229,4 +226,99 @@ RESPONSIVE
 
         margin-left: 0;
     }
+}
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media screen and (max-width: 768px) {
+
+    .sidebar {
+
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main-content {
+
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .dashboard-header h1 {
+
+        font-size: 24px;
+    }
+
+    .dashboard-header h4 {
+
+        font-size: 16px;
+    }
+
+    .dashboard-card {
+
+        margin-bottom: 15px;
+    }
+
+    .card {
+
+        margin-bottom: 15px;
+    }
+
+    img {
+
+        max-width: 100%;
+        height: auto;
+    }
+
+    table {
+
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+.card {
+
+    border: none;
+
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+    transition: 0.3s;
+}
+
+.card:hover {
+
+    transform: translateY(-5px);
+
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+.login-card:hover{
+
+    transform: scale(1.02);
+
+    transition: 0.3s;
+}
+body{
+    background:#f4f6f9;
+}
+
+.hero-section{
+    padding:80px 20px;
+}
+.sidebar{
+
+    z-index: 1000;
+}
+
+.main-content{
+
+    margin-left: 250px !important;
+
+    width: calc(100% - 250px);
+}
+.alert {
+
+    margin-bottom: 15px;
 }
