@@ -78,62 +78,37 @@
 
             </h3>
 
-            <table
-            class="table table-bordered table-striped">
+           <table class="table table-bordered">
 
-                <thead class="table-dark">
+    <tr>
 
-                    <tr>
+        <th>ID</th>
 
-                       <th>ID</th>
-                       <th>Username</th>
-                       <th>Activity</th>
-                       <th>Date & Time</th>
-                    </tr>
+        <th>Username</th>
 
-                </thead>
+        <th>Activity</th>
 
-                <tbody>
+        <th>Time</th>
 
-                    {% for log in logs %}
+    </tr>
 
-                    <tr>
+    {% for log in logs %}
 
-                        <td>
+    <tr>
 
-                            {{ log[0] }}
+        <td>{{ log[0] }}</td>
 
-                        </td>
+        <td>{{ log[1] }}</td>
 
-                        <td>
+        <td>{{ log[2] }}</td>
 
-                            {{ log[1] }}
+        <td>{{ log[3] }}</td>
 
-                        </td>
+    </tr>
 
-                        <td>
+    {% endfor %}
 
-                            {{ log[2] }}
-
-                        </td>
-                        <td>
-
-                            {{ log[3] }}
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
+</table>
     <!-- ACTIVITY GUIDE -->
 
     <div class="card mt-4 shadow">
@@ -228,9 +203,6 @@
 
     Customer Sales & Churn Analysis System
 
-    <br>
-
-    MCA Final Year Major Project
 
     <br>
 

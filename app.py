@@ -189,6 +189,45 @@ if not admin:
 
     conn.commit()
 # =========================================
+# ACTIVITY LOG FUNCTION
+# =========================================
+
+def add_log(
+    username,
+    activity
+):
+
+    conn = sqlite3.connect(
+        "users.db"
+    )
+
+    cursor = conn.cursor()
+
+    timestamp = datetime.now().strftime(
+        "%d-%m-%Y %H:%M:%S"
+    )
+
+    cursor.execute(
+        """
+        INSERT INTO activity_logs
+        (
+            username,
+            activity,
+            timestamp
+        )
+        VALUES (?, ?, ?)
+        """,
+        (
+            username,
+            activity,
+            timestamp
+        )
+    )
+
+    conn.commit()
+
+    conn.close()
+# =========================================
 # dataset_exist
 # =========================================
 
@@ -238,39 +277,6 @@ def load_data():
 
 
 
-# =========================================
-# ACTIVITY LOG FUNCTION
-# =========================================
-
-def add_log(username, activity):
-
-    timestamp = datetime.now().strftime(
-        "%d-%m-%Y %H:%M:%S"
-    )
-
-    conn = sqlite3.connect("users.db")
-
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        INSERT INTO activity_logs(
-            username,
-            activity,
-            timestamp
-        )
-        VALUES (?, ?, ?)
-        """,
-        (
-            username,
-            activity,
-            timestamp
-        )
-    )
-
-    conn.commit()
-
-    conn.close()
 
 
 # =========================================
@@ -475,13 +481,13 @@ def register():
 
     if request.method == "POST":
 
-        username = request.form[
-            "username"
-        ]
+        username = request.form["username"]
 
-        password = request.form[
-            "password"
-        ]
+        password = request.form["password"]
+
+        registration_date = datetime.now().strftime(
+            "%d-%m-%Y"
+        )
 
         hashed_password = generate_password_hash(
             password
@@ -496,21 +502,22 @@ def register():
         try:
 
             cursor.execute(
-
                 """
-                INSERT INTO users(
+                INSERT INTO users
+                (
                     username,
                     password,
-                    role
+                    role,
+                    registration_date
                 )
 
-                VALUES (?, ?, ?)
+                VALUES (?, ?, ?, ?)
                 """,
-
                 (
                     username,
                     hashed_password,
-                    "user"
+                    "user",
+                    registration_date
                 )
             )
 
@@ -523,7 +530,9 @@ def register():
 
             conn.close()
 
-            return redirect("/login_page")
+            return redirect(
+                "/login_page"
+            )
 
         except:
 
@@ -544,7 +553,6 @@ def register():
     return render_template(
         "register.html"
     )
-
 
 # =========================================
 # PROFILE
@@ -1075,6 +1083,11 @@ def dashboard():
 
         churn_chart="churn_chart.png"
     )
+cursor.execute(
+    "SELECT COUNT(*) FROM users"
+)
+
+total_users = cursor.fetchone()[0]
 def generate_charts():
 
     import pandas as pd
@@ -1524,7 +1537,7 @@ def model_info():
 
     <h3>
     Accuracy :
-    {accuracy} %
+     {accuracy} %
     </h3>
 
     <h3>
@@ -1538,7 +1551,6 @@ def model_info():
     </h3>
 
     """
-
 
 # =========================================
 # SALES FORECAST PAGE
@@ -1871,7 +1883,9 @@ def admin():
 
     cursor = conn.cursor()
 
-    # SEARCH
+    # =========================
+    # USER SEARCH
+    # =========================
 
     search = request.args.get(
         "search",
@@ -1894,28 +1908,72 @@ def admin():
     else:
 
         cursor.execute(
-            "SELECT * FROM users"
+            """
+            SELECT *
+            FROM users
+            """
         )
 
     users = cursor.fetchall()
 
+    # =========================
+    # ACTIVITY SEARCH
+    # =========================
+
+    if search:
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM activity_logs
+            WHERE username LIKE ?
+            ORDER BY id DESC
+            """,
+            (
+                "%" + search + "%",
+            )
+        )
+
+    else:
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM activity_logs
+            ORDER BY id DESC
+            LIMIT 20
+            """
+        )
+
+    logs = cursor.fetchall()
+
+    # =========================
+    # TOTAL USERS
+    # =========================
+
     cursor.execute(
         """
-        SELECT *
-        FROM activity_logs
-        ORDER BY id DESC
-        LIMIT 20
+        SELECT COUNT(*)
+        FROM users
         """
     )
 
-    logs = cursor.fetchall()
+    total_users = cursor.fetchone()[0]
 
     conn.close()
 
     return render_template(
+
         "admin.html",
+
         users=users,
-        logs=logs
+
+        logs=logs,
+
+        total_users=total_users,
+
+        search=search
+
     )
 # =========================================
 # ADD USER
